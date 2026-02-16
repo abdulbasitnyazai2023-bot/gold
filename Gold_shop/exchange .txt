@@ -1,0 +1,63 @@
+CREATE TABLE users (
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    phone VARCHAR(20),
+    is_verified BOOLEAN DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE currencies (
+    currency_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    symbol VARCHAR(10) UNIQUE NOT NULL, -- BTC, USDT, AFN
+    name VARCHAR(50),
+    type VARCHAR(20), -- fiat / crypto
+    rate_to_usd DOUBLE NOT NULL
+);
+CREATE TABLE wallets (
+    wallet_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    currency_id INTEGER,
+    balance DOUBLE DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (currency_id) REFERENCES currencies(currency_id)
+);CREATE TABLE exchange_transactions (
+    tx_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    from_currency INTEGER,
+    to_currency INTEGER,
+    from_amount DOUBLE,
+    to_amount DOUBLE,
+    rate DOUBLE,
+    tx_type VARCHAR(20), -- buy / sell / convert
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+CREATE TABLE orders (
+    order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    currency_id INTEGER,
+    order_type VARCHAR(10), -- buy / sell
+    price DOUBLE,
+    amount DOUBLE,
+    status VARCHAR(20), -- open / completed / canceled
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+CREATE TABLE deposits_withdrawals (
+    dw_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    currency_id INTEGER,
+    amount DOUBLE,
+    type VARCHAR(10), -- deposit / withdraw
+    status VARCHAR(20), -- pending / success / failed
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+CREATE TABLE security_logs (
+    log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    action VARCHAR(100),
+    ip_address VARCHAR(50),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
